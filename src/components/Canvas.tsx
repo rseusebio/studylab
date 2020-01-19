@@ -2,7 +2,6 @@ import React, { useState, useEffect, ChangeEventHandler, ChangeEvent, FunctionCo
 import styled from 'styled-components';
 import CanvasProps, { CanvasCoords } from '../types/CanvasProps';
 
-
 const allowedColors: Array<string> = [
     "blue",
     "red",
@@ -10,10 +9,10 @@ const allowedColors: Array<string> = [
     "purple"
 ];
 const CanvasContainer = styled.div`
-    height: 80vh;
-    width: 80vw;
+    height: 100vh;
+    width: 100vw;
 
-    background-color: rgba(250, 250, 250, 1);
+    background-color: rgba(240, 240, 240, 1);
 
     display: flex;
     flex-direction: column;
@@ -53,12 +52,28 @@ const LittleDiv = styled.div`
 `;
 
 const BoostedCanvas = styled.canvas`
-    // height: 50mm;
-    // width: 50mm;
+    // height: 30mm;
+    // width: 30mm;
     border 1px dashed orange;
     cursor: crosshair;
     margin-left: 50mm;
 `;
+const IMG_SRC: string = "https://i.ytimg.com/vi/MPV2METPeJU/maxresdefault.jpg";
+const IMG_ID: string = "dog_image";
+const loadingAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const src: string = IMG_SRC;
+    const id: string = IMG_ID;
+    const img = document.getElementById(IMG_ID) as HTMLImageElement;
+    img.onload = () => {
+        window.alert(`image loaded`);
+        console.info("img :: height", img.height, "width", img.width, "clientHeight", img.clientHeight, "clientWidth", img.clientWidth);
+        img.height = 500;
+        img.width = 500;
+        console.info("img :: height", img.height, "width", img.width, "clientHeight", img.clientHeight, "clientWidth", img.clientWidth);
+
+    }
+    img.src = src;
+}
 
 const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
@@ -78,6 +93,19 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     }
 
     let isDrawing: boolean = false;
+
+    const printAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const id: string = IMG_ID;
+        let img = document.getElementById(id) as HTMLImageElement;
+        if (!img) {
+            window.alert("failed ")
+            return;
+        }
+        let canvas = document.getElementById(props._id) as HTMLCanvasElement;
+        const ctx = canvas?.getContext("2d") as CanvasRenderingContext2D;
+        ctx.drawImage(img, 0, 0);
+        console.info("canvas :: height", canvas.height, "width", canvas.width, "clientHeight", canvas.clientHeight, "clientWidth", canvas.clientWidth);
+    }
 
     const mouseDownHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
 
@@ -104,6 +132,8 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         coords.X = ev.clientX - canvas?.offsetLeft;
         coords.Y = ev.clientY - canvas?.offsetTop;
         isDrawing = true;
+
+
 
     }
 
@@ -135,7 +165,6 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         isDrawing = false;
     }
 
-
     return (
         <CanvasContainer>
 
@@ -160,10 +189,26 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
             <LittleDiv style={{ backgroundColor: color }} />
 
-            <BoostedCanvas /*height={500} width={500}*/ id={props._id} onMouseDown={mouseDownHandler} onMouseMove={mouseMovementHandler} onMouseUp={mouseUpHandler} >
+            <BoostedCanvas
+                height={500}
+                width={500}
+                id={props._id}
+                onMouseDown={mouseDownHandler}
+                onMouseMove={mouseMovementHandler}
+                onMouseUp={mouseUpHandler}
+                onMouseLeave={mouseUpHandler} >
 
             </BoostedCanvas>
 
+            <button onClick={loadingAnImage}>
+                Load Image
+            </button>
+
+            <button onClick={printAnImage}>
+                Print image
+            </button>
+
+            <img id={IMG_ID} style={{ display: 'none' }} />
         </CanvasContainer>
     )
 }

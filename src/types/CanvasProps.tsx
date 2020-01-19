@@ -1,17 +1,11 @@
 import { ReactNode } from "react";
 
-interface CanvasProps extends JSX.IntrinsicAttributes {
+export default interface CanvasProps extends JSX.IntrinsicAttributes {
     _id: string;
     children?: ReactNode;
 }
 
-interface CanvasCoords {
+export interface CanvasCoords {
     X: number;
     Y: number;
-}
-
-export default CanvasProps;
-
-export {
-    CanvasCoords
 }
