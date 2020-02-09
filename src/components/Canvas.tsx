@@ -133,8 +133,6 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         coords.Y = ev.clientY - canvas?.offsetTop;
         isDrawing = true;
 
-
-
     }
 
     const mouseMovementHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
