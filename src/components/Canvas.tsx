@@ -2,12 +2,7 @@ import React, { useState, useEffect, ChangeEventHandler, ChangeEvent, FunctionCo
 import styled from 'styled-components';
 import CanvasProps, { CanvasCoords } from '../types/CanvasProps';
 
-const allowedColors: Array<string> = [
-    "blue",
-    "red",
-    "green",
-    "purple"
-];
+
 const CanvasContainer = styled.div`
     height: 100vh;
     width: 100vw;
@@ -41,15 +36,6 @@ const CanvasHeader = styled.h3`
     margin: 0mm;
     padding: 0mm;
 `;
-const CanvasColorSelect = styled.select`
-    padding: 0mm;
-    margin: 0mm;
-`;
-
-const LittleDiv = styled.div`
-    height: 5mm;
-    width: 5mm;
-`;
 
 const BoostedCanvas = styled.canvas`
     // height: 30mm;
@@ -58,14 +44,16 @@ const BoostedCanvas = styled.canvas`
     cursor: crosshair;
     margin-left: 50mm;
 `;
+
 const IMG_SRC: string = "https://i.ytimg.com/vi/MPV2METPeJU/maxresdefault.jpg";
 const IMG_ID: string = "dog_image";
-const loadingAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+
+const loadingAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
     const src: string = IMG_SRC;
     const id: string = IMG_ID;
     const img = document.getElementById(IMG_ID) as HTMLImageElement;
     img.onload = () => {
-        window.alert(`image loaded`);
+        // window.alert(`image loaded`);
         console.info("img :: height", img.height, "width", img.width, "clientHeight", img.clientHeight, "clientWidth", img.clientWidth);
         img.height = 500;
         img.width = 500;
@@ -77,24 +65,28 @@ const loadingAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => 
 
 const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
-    let [color, setColor] = useState(allowedColors[0]);
+    // #region Component States
+    let [canvasHeight, setCanvasHeight] = useState(500);
+    let [canvasWidth, setCanvasWidth] = useState(500);
+    useEffect(() => {
+        loadingAnImage(null);
+        printAnImage(null);
+        initKeyPressListeners();
+    });
+    // #endregion
 
-    let [canvasHeight, setCanvasHeight] = useState(100);
-
-    let [canvasWidth, setCanvasWidth] = useState(100);
-
-    const selectionHandler = (e: ChangeEvent<HTMLSelectElement>) => {
-        setColor(e.target.value);
-    }
-
+    // #region Component Variables
+    // This is just a Flag that changes according to button click. 
+    // there is no need for it to be a state variable.
     let coords: CanvasCoords = {
         X: 0,
         Y: 0
     }
-
     let isDrawing: boolean = false;
+    let isCtrlPressed: boolean = false;
+    // #endregion
 
-    const printAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const printAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
         const id: string = IMG_ID;
         let img = document.getElementById(id) as HTMLImageElement;
         if (!img) {
@@ -103,7 +95,8 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         }
         let canvas = document.getElementById(props._id) as HTMLCanvasElement;
         const ctx = canvas?.getContext("2d") as CanvasRenderingContext2D;
-        ctx.drawImage(img, 0, 0);
+        let undefinedHolder: any = undefined;
+        ctx.drawImage(img, 0, 0, 500, 500);
         console.info("canvas :: height", canvas.height, "width", canvas.width, "clientHeight", canvas.clientHeight, "clientWidth", canvas.clientWidth);
     }
 
@@ -135,21 +128,24 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
     }
 
-    const mouseMovementHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    const mouseUpHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+        isDrawing = false;
+    }
 
+    const mouseMovementHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         if (!isDrawing) {
             return;
         }
-
         let canvas: any = document.getElementById(props._id);
         if (!canvas) {
             console.error(`canvas is null, ${props._id}`)
             return;
         }
 
-        coords.X = ev.clientX - canvas?.offsetLeft;
-        coords.Y = ev.clientY - canvas?.offsetTop;
-
+        // offset is the coordinate relative to the position of the padding edge of the target node
+        coords.X = ev.nativeEvent.offsetX;
+        coords.Y = ev.nativeEvent.offsetY;
+        // moviment is the coordinate relative to the position of the last mousemove event.
         let prevX = coords.X - ev.movementX;
         let prevY = coords.Y - ev.movementY;
 
@@ -159,8 +155,76 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         ctx.stroke();
     }
 
-    const mouseUpHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        isDrawing = false;
+    const handleHeightChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+        const value: number = parseInt(ev.target.value);
+        if (isNaN(value)) {
+            return;
+        }
+        console.info(`height value: ${value}`);
+        setCanvasHeight(value);
+    }
+
+    const handleWidthChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+        const value: number = parseInt(ev.target.value);
+        if (isNaN(value)) {
+            return;
+        }
+        console.info(`height value: ${value}`);
+        setCanvasWidth(value);
+    }
+
+    const drawingRoundBrackets = (coords: any, height: number, width: number) => {
+        let canvas: any = document.getElementById(props._id);
+        // canvas as HTMLCanvasElement;
+        if (!canvas) {
+            return;
+        }
+        let ctx = canvas.getContext("2d");
+        if (!ctx) {
+            return;
+        }
+        ctx.moveTo(coords.X, coords.Y);
+        ctx.lineTo(coords.X, coords.Y + height / 2);
+        ctx.lineTo(coords.X + height / 2, coords.Y + height / 2);
+        ctx.moveTo(coords.X, coords.Y);
+        ctx.lineTo(coords.X, coords.Y - height / 2);
+        ctx.lineTo(coords.X + height / 2, coords.Y - height / 2);
+        ctx.stroke();
+    }
+
+    const keyDownHandler = (ev: KeyboardEvent) => {
+        console.info(`[DOWN] key: ${ev.key}, keyCode: ${ev.keyCode}`);
+        if (ev.keyCode == 17) {
+            isCtrlPressed = true;
+        }
+    }
+
+    const keyUpHandler = (ev: KeyboardEvent) => {
+        console.info(`[UP] key: ${ev.key}, keyCode: ${ev.keyCode}`);
+        if (ev.keyCode == 17) {
+            isCtrlPressed = false;
+        }
+    }
+
+    const mouseClickHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+        const coords = {
+            X: ev.nativeEvent.offsetX,
+            Y: ev.nativeEvent.offsetY,
+        }
+        console.info("[MOUSE_CLICKED] coords:", coords);
+        if (!isCtrlPressed) {
+            return;
+        }
+        drawingRoundBrackets(coords, 50, 50);
+    }
+
+    const initKeyPressListeners = () => {
+        let canvas = document.getElementById(props._id);
+        if (!canvas) {
+            return;
+        }
+        window.onkeydown = keyDownHandler;
+        window.onkeyup = keyUpHandler;
     }
 
     return (
@@ -168,35 +232,22 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
             <CanvasHeader>MyCanvas</CanvasHeader>
 
-            <CanvasColorSelect onChange={selectionHandler} defaultValue={allowedColors[0]}>
-                {
-                    (() => {
-                        let count: number = 0;
-                        return allowedColors.map((color: string, index: number) => {
-                            return (
-                                <option key={index} value={color} style={{ backgroundColor: color }} >
-                                    {
-                                        color
-                                    }
-                                </option>
-                            );
-                        })
-                    })()
-                }
-            </CanvasColorSelect>
-
-            <LittleDiv style={{ backgroundColor: color }} />
+            <div>
+                <p>canvas setting</p>
+                <input type="number" value={canvasHeight} onChange={handleHeightChange} />
+                <input type="number" value={canvasWidth} onChange={handleWidthChange} />
+            </div>
 
             <BoostedCanvas
-                height={500}
-                width={500}
+                height={canvasHeight}
+                width={canvasWidth}
                 id={props._id}
                 onMouseDown={mouseDownHandler}
                 onMouseMove={mouseMovementHandler}
                 onMouseUp={mouseUpHandler}
-                onMouseLeave={mouseUpHandler} >
-
-            </BoostedCanvas>
+                onMouseLeave={mouseUpHandler}
+                onClick={mouseClickHandler}
+            />
 
             <button onClick={loadingAnImage}>
                 Load Image
@@ -207,6 +258,7 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
             </button>
 
             <img id={IMG_ID} style={{ display: 'none' }} />
+
         </CanvasContainer>
     )
 }
