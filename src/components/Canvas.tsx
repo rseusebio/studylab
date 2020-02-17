@@ -84,6 +84,8 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     }
     let isDrawing: boolean = false;
     let isCtrlPressed: boolean = false;
+    let isShiftPressed: boolean = false;
+    let isCKeyPressed: boolean = false;
     // #endregion
 
     const printAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
@@ -99,7 +101,7 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         ctx.drawImage(img, 0, 0, 500, 500);
         console.info("canvas :: height", canvas.height, "width", canvas.width, "clientHeight", canvas.clientHeight, "clientWidth", canvas.clientWidth);
     }
-
+    // #region Mouse Events
     const mouseDownHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
 
         var showMeEvent = `
@@ -127,11 +129,9 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         isDrawing = true;
 
     }
-
     const mouseUpHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         isDrawing = false;
     }
-
     const mouseMovementHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         if (!isDrawing) {
             return;
@@ -154,7 +154,67 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         ctx.lineTo(coords.X, coords.Y);
         ctx.stroke();
     }
+    const mouseClickHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+        if (!isCtrlPressed && !isShiftPressed && !isCKeyPressed) {
+            return;
+        }
+        const coords = {
+            X: ev.nativeEvent.offsetX,
+            Y: ev.nativeEvent.offsetY,
+        }
+        console.info("[MOUSE_CLICKED] coords:", coords,
+            `button: ${ev.button}, ctrl: ${isCtrlPressed}, shift:${isShiftPressed}, c_key: ${isCKeyPressed}`);
+        if (isCtrlPressed) {
+            drawingSquareBrackets(coords, 25, 2.5, true);
+        }
+        else if (isShiftPressed) {
+            drawingSquareBrackets(coords, 25, 2.5, false);
+        }
+        else if (isCKeyPressed) {
+            drawingCurlyBrackets(coords, 70, 1);
+        }
 
+    }
+    // #endregion 
+    // #region Keyboard Events
+    const keyDownHandler = (ev: KeyboardEvent) => {
+        console.info(`[DOWN] key: ${ev.key}, keyCode: ${ev.keyCode}`);
+        switch (ev.keyCode) {
+            // 'c' button
+            case 67:
+                isCKeyPressed = true;
+                break;
+            // shift button
+            case 16:
+                isShiftPressed = true;
+                break;
+            // ctrl button
+            case 17:
+            default:
+                isCtrlPressed = true;
+                break;
+        }
+    }
+    const keyUpHandler = (ev: KeyboardEvent) => {
+        console.info(`[UP] key: ${ev.key}, keyCode: ${ev.keyCode}`);
+        switch (ev.keyCode) {
+            // 'c' button
+            case 67:
+                isCKeyPressed = false;
+                break;
+            // shift button
+            case 16:
+                isShiftPressed = false;
+                break;
+            // ctrl button
+            case 17:
+            default:
+                isCtrlPressed = false;
+                break;
+        }
+    }
+    // #endregion
+    // #region Canvas Size Change Handlers
     const handleHeightChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
         const value: number = parseInt(ev.target.value);
         if (isNaN(value)) {
@@ -163,7 +223,6 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         console.info(`height value: ${value}`);
         setCanvasHeight(value);
     }
-
     const handleWidthChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
         const value: number = parseInt(ev.target.value);
         if (isNaN(value)) {
@@ -172,8 +231,13 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         console.info(`height value: ${value}`);
         setCanvasWidth(value);
     }
+    // #endregion 
+    // #region Types of brackets
 
-    const drawingRoundBrackets = (coords: any, height: number, width: number) => {
+    // round brackets or parentheses ()
+    const drawingRoundBrackets = (coords: any, height: number, width: number, isOpen: boolean = true) => { }
+    // square brackets []
+    const drawingSquareBrackets = (coords: any, height: number, width: number, isOpen: boolean = true) => {
         let canvas: any = document.getElementById(props._id);
         // canvas as HTMLCanvasElement;
         if (!canvas) {
@@ -183,40 +247,61 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         if (!ctx) {
             return;
         }
+        ctx.lineWidth = width;
+        ctx.strokeStyle = "blue";
+        let halfSize: number = height / 2;
         ctx.moveTo(coords.X, coords.Y);
-        ctx.lineTo(coords.X, coords.Y + height / 2);
-        ctx.lineTo(coords.X + height / 2, coords.Y + height / 2);
+        ctx.lineTo(coords.X, coords.Y + halfSize);
+        if (isOpen) {
+            ctx.lineTo(coords.X + halfSize, coords.Y + halfSize);
+        }
+        else {
+            ctx.lineTo(coords.X - halfSize, coords.Y + halfSize);
+        }
         ctx.moveTo(coords.X, coords.Y);
-        ctx.lineTo(coords.X, coords.Y - height / 2);
-        ctx.lineTo(coords.X + height / 2, coords.Y - height / 2);
+        ctx.lineTo(coords.X, coords.Y - halfSize);
+        if (isOpen) {
+            ctx.lineTo(coords.X + halfSize, coords.Y - halfSize);
+        }
+        else {
+            ctx.lineTo(coords.X - halfSize, coords.Y - halfSize);
+        }
+        ctx.stroke();
+    }
+    // curly brackets or braces {} 
+    const drawingCurlyBrackets = (coords: any, height: number, width: number, isOpen: boolean = true) => {
+        // Getting canvas by id and checking if it exists
+        let canvas: any = document.getElementById(props._id);
+        if (!canvas) {
+            return;
+        }
+        // getting canvas' context
+        let ctx = canvas.getContext("2d");
+        if (!ctx) {
+            return;
+        }
+        // setting context properties
+        ctx.lineWidth = width;
+        ctx.strokeStyle = "blue";
+        let halfSize: number = height / 2;
+        let quarterSize: number = height / 4;
+        let oneEighthSize: number = height / 8;
+        let radius: number = oneEighthSize;
+        // #region drawing curly brackets
+        ctx.moveTo(coords.X - oneEighthSize, coords.Y);
+        ctx.arcTo(coords.X, coords.Y, coords.X, coords.Y - oneEighthSize, radius);
+        ctx.lineTo(coords.X, coords.Y - oneEighthSize - quarterSize);
+        ctx.arcTo(coords.X, coords.Y - halfSize, coords.X + oneEighthSize, coords.Y - halfSize, radius);
+        ctx.moveTo(coords.X - oneEighthSize, coords.Y);
+        ctx.arcTo(coords.X, coords.Y, coords.X, coords.Y + oneEighthSize, radius);
+        ctx.lineTo(coords.X, coords.Y + oneEighthSize + quarterSize);
+        ctx.arcTo(coords.X, coords.Y + halfSize, coords.X + oneEighthSize, coords.Y + halfSize, radius);
+        // #endregion
+
         ctx.stroke();
     }
 
-    const keyDownHandler = (ev: KeyboardEvent) => {
-        console.info(`[DOWN] key: ${ev.key}, keyCode: ${ev.keyCode}`);
-        if (ev.keyCode == 17) {
-            isCtrlPressed = true;
-        }
-    }
-
-    const keyUpHandler = (ev: KeyboardEvent) => {
-        console.info(`[UP] key: ${ev.key}, keyCode: ${ev.keyCode}`);
-        if (ev.keyCode == 17) {
-            isCtrlPressed = false;
-        }
-    }
-
-    const mouseClickHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        const coords = {
-            X: ev.nativeEvent.offsetX,
-            Y: ev.nativeEvent.offsetY,
-        }
-        console.info("[MOUSE_CLICKED] coords:", coords);
-        if (!isCtrlPressed) {
-            return;
-        }
-        drawingRoundBrackets(coords, 50, 50);
-    }
+    // #endregion
 
     const initKeyPressListeners = () => {
         let canvas = document.getElementById(props._id);
