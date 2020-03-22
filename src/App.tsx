@@ -1,35 +1,11 @@
-import React, { ReactNode } from 'react';
-import logo from './logo.svg';
+import React, { FunctionComponent } from 'react';
 import './App.css';
 import Canvas from './components/Canvas';
-import CanvasProps from './types/CanvasProps'
+import CanvasProps from './types/CanvasClasses';
 
-// const App: React.FC = () => {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-const canvasProps: JSX.IntrinsicAttributes & CanvasProps & { children?: ReactNode } = {
-  _id: "myCanvas",
-  key: "canvasProps"
-}
+const canvasProps: CanvasProps = { _id: "myCanvas", key: "canvasProps" };
 
-const App: React.FC = () => {
+const App: React.FunctionComponent = () => {
   return (
     <Canvas {...canvasProps} />
   );

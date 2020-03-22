@@ -1,49 +1,11 @@
 import React, { useState, useEffect, ChangeEventHandler, ChangeEvent, FunctionComponent } from 'react';
 import styled from 'styled-components';
-import CanvasProps, { CanvasCoords } from '../types/CanvasProps';
-
-
-const CanvasContainer = styled.div`
-    height: 100vh;
-    width: 100vw;
-
-    background-color: rgba(240, 240, 240, 1);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-
-    border: 1px dashed purple;
-`;
-
-const StyledCanvas = styled.canvas`
-    height: 500px;
-    width: 500px;
-    border: 1px solid blue;
-`;
-
-const CanvasHeader = styled.h3`
-    height: auto;
-    width: 100%;
-    border: 1px solid blue;
-
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
-    margin: 0mm;
-    padding: 0mm;
-`;
-
-const BoostedCanvas = styled.canvas`
-    // height: 30mm;
-    // width: 30mm;
-    border 1px dashed orange;
-    cursor: crosshair;
-    margin-left: 50mm;
-`;
+import CanvasProps, { CanvasCoords, CanvasInternalStates } from '../types/CanvasClasses';
+import {
+    CanvasContainer,
+    CanvasHeader,
+    BoostedCanvas
+} from './Canvas.styles'
 
 const IMG_SRC: string = "https://i.ytimg.com/vi/MPV2METPeJU/maxresdefault.jpg";
 const IMG_ID: string = "dog_image";
@@ -63,11 +25,15 @@ const loadingAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | nu
     img.src = src;
 }
 
+
+
+
 const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
     // #region Component States
-    let [canvasHeight, setCanvasHeight] = useState(500);
-    let [canvasWidth, setCanvasWidth] = useState(500);
+    const [canvasHeight, setCanvasHeight] = useState(500);
+    const [canvasWidth, setCanvasWidth] = useState(500);
+    const [cursor, setCursor] = useState("default");
     useEffect(() => {
         loadingAnImage(null);
         printAnImage(null);
@@ -78,14 +44,7 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     // #region Component Variables
     // This is just a Flag that changes according to button click. 
     // there is no need for it to be a state variable.
-    let coords: CanvasCoords = {
-        X: 0,
-        Y: 0
-    }
-    let isDrawing: boolean = false;
-    let isCtrlPressed: boolean = false;
-    let isShiftPressed: boolean = false;
-    let isCKeyPressed: boolean = false;
+    const internalState = new CanvasInternalStates();
     // #endregion
 
     const printAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
@@ -96,122 +55,74 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
             return;
         }
         let canvas = document.getElementById(props._id) as HTMLCanvasElement;
+        if (!canvas) {
+            return;
+        }
         const ctx = canvas?.getContext("2d") as CanvasRenderingContext2D;
-        let undefinedHolder: any = undefined;
         ctx.drawImage(img, 0, 0, 500, 500);
-        console.info("canvas :: height", canvas.height, "width", canvas.width, "clientHeight", canvas.clientHeight, "clientWidth", canvas.clientWidth);
     }
     // #region Mouse Events
     const mouseDownHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-
-        var showMeEvent = `
-        clientX: ${ev.clientX},
-        clientY: ${ev.clientY},
-        movementX: ${ev.movementX},
-        movementY: ${ev.movementY},
-        pageX: ${ev.pageX},
-        pageY: ${ev.pageY},
-        screenX: ${ev.screenX},
-        screenY: ${ev.screenY}
-       `;
-        console.info(showMeEvent);
-
-        let canvas = document.getElementById(props._id);
-        if (!canvas) {
-            console.error(`canvas is null, ${props._id}`)
-            return;
-        }
-        console.info(`offsetTop: ${canvas?.offsetTop}, offsetLeft: ${canvas?.offsetLeft}`);
-        console.info(`x: ${ev.clientX - canvas?.offsetLeft}, offsetLeft: ${ev.clientY - canvas?.offsetTop}`);
-
-        coords.X = ev.clientX - canvas?.offsetLeft;
-        coords.Y = ev.clientY - canvas?.offsetTop;
-        isDrawing = true;
+        setCursor("crosshair");
+        internalState.Drawing = true;
+        internalState.Coords.X = ev.nativeEvent.offsetX;
+        internalState.Coords.Y = ev.nativeEvent.offsetY;
 
     }
     const mouseUpHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        isDrawing = false;
+        internalState.Drawing = false;
     }
     const mouseMovementHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        if (!isDrawing) {
-            return;
-        }
-        let canvas: any = document.getElementById(props._id);
+        const canvas: any = document.getElementById(props._id) as HTMLCanvasElement;
         if (!canvas) {
-            console.error(`canvas is null, ${props._id}`)
             return;
         }
-
-        // offset is the coordinate relative to the position of the padding edge of the target node
-        coords.X = ev.nativeEvent.offsetX;
-        coords.Y = ev.nativeEvent.offsetY;
-        // moviment is the coordinate relative to the position of the last mousemove event.
-        let prevX = coords.X - ev.movementX;
-        let prevY = coords.Y - ev.movementY;
-
-        let ctx = canvas.getContext("2d");
-        ctx.moveTo(prevX, prevY);
-        ctx.lineTo(coords.X, coords.Y);
-        ctx.stroke();
+        if (!internalState.Drawing) {
+            // start checking 
+            // ev.nativeEvent.
+        }
+        else {
+            // free drawing
+            // offset is the coordinate relative to the position of the padding edge of the target node
+            internalState.Coords.X = ev.nativeEvent.offsetX;
+            internalState.Coords.Y = ev.nativeEvent.offsetY;
+            // moviment is the coordinate relative to the position of the last mousemove event.
+            const prevX = internalState.Coords.X - ev.movementX;
+            const prevY = internalState.Coords.Y - ev.movementY;
+            const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(internalState.Coords.X, internalState.Coords.Y);
+            ctx.stroke();
+        }
     }
     const mouseClickHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        if (!isCtrlPressed && !isShiftPressed && !isCKeyPressed) {
-            return;
+        internalState.Coords.X = ev.nativeEvent.offsetX;
+        internalState.Coords.Y = ev.nativeEvent.offsetY;
+        // CTRL key
+        if (internalState.keyState.get("17")) {
+            drawingSquareBrackets(true);
         }
-        const coords = {
-            X: ev.nativeEvent.offsetX,
-            Y: ev.nativeEvent.offsetY,
+        // SHIFT key
+        else if (internalState.keyState.get("16")) {
+            drawingSquareBrackets(false);
         }
-        console.info("[MOUSE_CLICKED] coords:", coords,
-            `button: ${ev.button}, ctrl: ${isCtrlPressed}, shift:${isShiftPressed}, c_key: ${isCKeyPressed}`);
-        if (isCtrlPressed) {
-            drawingSquareBrackets(coords, 25, 2.5, true);
+        // 'C' key
+        else if (internalState.keyState.get("67")) {
+            drawingCurlyBrackets(true);
         }
-        else if (isShiftPressed) {
-            drawingSquareBrackets(coords, 25, 2.5, false);
+        // 'V' key
+        else if (internalState.keyState.get("86")) {
+            drawingCurlyBrackets(false);
         }
-        else if (isCKeyPressed) {
-            drawingCurlyBrackets(coords, 70, 1);
-        }
-
     }
     // #endregion 
+
     // #region Keyboard Events
     const keyDownHandler = (ev: KeyboardEvent) => {
-        console.info(`[DOWN] key: ${ev.key}, keyCode: ${ev.keyCode}`);
-        switch (ev.keyCode) {
-            // 'c' button
-            case 67:
-                isCKeyPressed = true;
-                break;
-            // shift button
-            case 16:
-                isShiftPressed = true;
-                break;
-            // ctrl button
-            case 17:
-            default:
-                isCtrlPressed = true;
-                break;
-        }
+        internalState.keyState.set(ev.keyCode + "", true);
     }
     const keyUpHandler = (ev: KeyboardEvent) => {
-        console.info(`[UP] key: ${ev.key}, keyCode: ${ev.keyCode}`);
-        switch (ev.keyCode) {
-            // 'c' button
-            case 67:
-                isCKeyPressed = false;
-                break;
-            // shift button
-            case 16:
-                isShiftPressed = false;
-                break;
-            // ctrl button
-            case 17:
-            default:
-                isCtrlPressed = false;
-                break;
-        }
+        internalState.keyState.set(ev.keyCode + "", false);
     }
     // #endregion
     // #region Canvas Size Change Handlers
@@ -232,12 +143,12 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         setCanvasWidth(value);
     }
     // #endregion 
-    // #region Types of brackets
 
+    // #region Types of brackets
     // round brackets or parentheses ()
-    const drawingRoundBrackets = (coords: any, height: number, width: number, isOpen: boolean = true) => { }
+    const drawingRoundBrackets = (isOpen: boolean) => { }
     // square brackets []
-    const drawingSquareBrackets = (coords: any, height: number, width: number, isOpen: boolean = true) => {
+    const drawingSquareBrackets = (isOpen: boolean) => {
         let canvas: any = document.getElementById(props._id);
         // canvas as HTMLCanvasElement;
         if (!canvas) {
@@ -247,29 +158,29 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         if (!ctx) {
             return;
         }
-        ctx.lineWidth = width;
+        ctx.lineWidth = internalState.Width;
         ctx.strokeStyle = "blue";
-        let halfSize: number = height / 2;
-        ctx.moveTo(coords.X, coords.Y);
-        ctx.lineTo(coords.X, coords.Y + halfSize);
+        let halfSize: number = internalState.Height / 2;
+        ctx.moveTo(internalState.Coords.X, internalState.Coords.Y);
+        ctx.lineTo(internalState.Coords.X, internalState.Coords.Y + halfSize);
         if (isOpen) {
-            ctx.lineTo(coords.X + halfSize, coords.Y + halfSize);
+            ctx.lineTo(internalState.Coords.X + halfSize, internalState.Coords.Y + halfSize);
         }
         else {
-            ctx.lineTo(coords.X - halfSize, coords.Y + halfSize);
+            ctx.lineTo(internalState.Coords.X - halfSize, internalState.Coords.Y + halfSize);
         }
-        ctx.moveTo(coords.X, coords.Y);
-        ctx.lineTo(coords.X, coords.Y - halfSize);
+        ctx.moveTo(internalState.Coords.X, internalState.Coords.Y);
+        ctx.lineTo(internalState.Coords.X, internalState.Coords.Y - halfSize);
         if (isOpen) {
-            ctx.lineTo(coords.X + halfSize, coords.Y - halfSize);
+            ctx.lineTo(internalState.Coords.X + halfSize, internalState.Coords.Y - halfSize);
         }
         else {
-            ctx.lineTo(coords.X - halfSize, coords.Y - halfSize);
+            ctx.lineTo(internalState.Coords.X - halfSize, internalState.Coords.Y - halfSize);
         }
         ctx.stroke();
     }
     // curly brackets or braces {} 
-    const drawingCurlyBrackets = (coords: any, height: number, width: number, isOpen: boolean = true) => {
+    const drawingCurlyBrackets = (isOpen: boolean) => {
         // Getting canvas by id and checking if it exists
         let canvas: any = document.getElementById(props._id);
         if (!canvas) {
@@ -281,26 +192,38 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
             return;
         }
         // setting context properties
-        ctx.lineWidth = width;
+        ctx.lineWidth = internalState.Width;
         ctx.strokeStyle = "blue";
-        let halfSize: number = height / 2;
-        let quarterSize: number = height / 4;
-        let oneEighthSize: number = height / 8;
+        let halfSize: number = internalState.Height / 2;
+        let quarterSize: number = internalState.Height / 4;
+        let oneEighthSize: number = internalState.Height / 8;
         let radius: number = oneEighthSize;
         // #region drawing curly brackets
-        ctx.moveTo(coords.X - oneEighthSize, coords.Y);
-        ctx.arcTo(coords.X, coords.Y, coords.X, coords.Y - oneEighthSize, radius);
-        ctx.lineTo(coords.X, coords.Y - oneEighthSize - quarterSize);
-        ctx.arcTo(coords.X, coords.Y - halfSize, coords.X + oneEighthSize, coords.Y - halfSize, radius);
-        ctx.moveTo(coords.X - oneEighthSize, coords.Y);
-        ctx.arcTo(coords.X, coords.Y, coords.X, coords.Y + oneEighthSize, radius);
-        ctx.lineTo(coords.X, coords.Y + oneEighthSize + quarterSize);
-        ctx.arcTo(coords.X, coords.Y + halfSize, coords.X + oneEighthSize, coords.Y + halfSize, radius);
+        if (isOpen) {
+            ctx.moveTo(internalState.Coords.X - oneEighthSize, internalState.Coords.Y);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y, internalState.Coords.X, internalState.Coords.Y - oneEighthSize, radius);
+            ctx.lineTo(internalState.Coords.X, internalState.Coords.Y - oneEighthSize - quarterSize);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y - halfSize, internalState.Coords.X + oneEighthSize, internalState.Coords.Y - halfSize, radius);
+            ctx.moveTo(internalState.Coords.X - oneEighthSize, internalState.Coords.Y);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y, internalState.Coords.X, internalState.Coords.Y + oneEighthSize, radius);
+            ctx.lineTo(internalState.Coords.X, internalState.Coords.Y + oneEighthSize + quarterSize);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y + halfSize, internalState.Coords.X + oneEighthSize, internalState.Coords.Y + halfSize, radius);
+        }
+        else {
+            ctx.moveTo(internalState.Coords.X + oneEighthSize, internalState.Coords.Y);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y, internalState.Coords.X, internalState.Coords.Y - oneEighthSize, radius);
+            ctx.lineTo(internalState.Coords.X, internalState.Coords.Y - oneEighthSize - quarterSize);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y - halfSize, internalState.Coords.X - oneEighthSize, internalState.Coords.Y - halfSize, radius);
+            ctx.moveTo(internalState.Coords.X + oneEighthSize, internalState.Coords.Y);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y, internalState.Coords.X, internalState.Coords.Y + oneEighthSize, radius);
+            ctx.lineTo(internalState.Coords.X, internalState.Coords.Y + oneEighthSize + quarterSize);
+            ctx.arcTo(internalState.Coords.X, internalState.Coords.Y + halfSize, internalState.Coords.X - oneEighthSize, internalState.Coords.Y + halfSize, radius);
+        }
         // #endregion
 
         ctx.stroke();
     }
-
+    // como identificar o brackets e as notações
     // #endregion
 
     const initKeyPressListeners = () => {
@@ -332,6 +255,7 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
                 onMouseUp={mouseUpHandler}
                 onMouseLeave={mouseUpHandler}
                 onClick={mouseClickHandler}
+                style={{ cursor: cursor }}
             />
 
             <button onClick={loadingAnImage}>
