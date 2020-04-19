@@ -3,15 +3,20 @@ import styled from 'styled-components';
 const CanvasContainer = styled.div`
     height: 100vh;
     width: 100vw;
+    padding: 0mm;
+    margin: 0mm;
 
-    background-color: rgba(240, 240, 240, 1);
+    background-color: #e5eaee;
 
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
 
-    border: 1px dashed purple;
+    .open-panel{
+        left: 0mm;
+    }
+
 `;
 
 const CanvasHeader = styled.h3`
@@ -29,15 +34,50 @@ const CanvasHeader = styled.h3`
 `;
 
 const BoostedCanvas = styled.canvas`
-    // height: 30mm;
-    // width: 30mm;
-    border 1px dashed orange;
+    padding: 0mm;
+    margin: 0mm;
+    border 0.1mm solid white;
+    background-color: white;
     cursor: crosshair;
-    margin-left: 50mm;
 `;
+const PanelContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+
+    position: fixed;
+    top: 10mm;
+    left: -50mm;
+
+    transition: left 0.25s;
+`;
+const PanelOpener = styled.div`
+    height: 12mm;
+    width: 14mm;
+    background-color: #333333;
+    border-radius: 0mm 1.8mm 1.8mm 0mm;
+
+    margin-top: 5mm;    
+
+    position: relative;
+
+    cursor: pointer;
+`;
+const PanelControllers = styled.div`
+    height: ${(window.innerHeight * 25.4 / 96) - 10}mm;
+    width: 50mm;
+    background-color:#333333;
+    position: relative;
+    overflow-y: scroll;
+`;
+// const CanvasOpacity
 
 export {
     CanvasContainer,
     CanvasHeader,
-    BoostedCanvas
+    BoostedCanvas,
+    PanelOpener,
+    PanelContainer,
+    PanelControllers
 }

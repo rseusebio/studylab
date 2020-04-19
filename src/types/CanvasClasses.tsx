@@ -49,10 +49,13 @@ export class CanvasInternalStates {
     private _height: number = 25;
     private _width: number = 2;
     private _drawStack: Array<Draw> = new Array<Draw>();
+    public Coords: CanvasCoords = new CanvasCoords(0,0);
 
-    constructor(h: number, w: number) {
+    constructor(/*h: number, w: number*/) {
+        /*
         this._height = h;
         this._width = w;
+        */
     }
 
     get Drawing(): boolean {
