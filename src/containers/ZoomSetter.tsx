@@ -1,14 +1,9 @@
 import React, { FunctionComponent, useState } from 'react';
-import { connect, MapDispatchToProps } from 'react-redux'
-import { IState } from '../reducers';
 import { TextField, Button } from '@material-ui/core';
-import { changeImg } from '../actions';
 import globalProps from '../globalProps'
-interface ImageProps extends IState {
-    onClick: any;
-}
 
-const ImageController: FunctionComponent<ImageProps> = (props: ImageProps) => {
+
+const ZoomSetter: FunctionComponent<any> = (props: any) => {
     const loadImageOnCanvas = (imgSrc: CanvasImageSource) => {
         const canvas: HTMLCanvasElement = document.getElementById(globalProps.canvasId) as HTMLCanvasElement;
         if (!canvas) {
@@ -54,16 +49,4 @@ const ImageController: FunctionComponent<ImageProps> = (props: ImageProps) => {
     );
 }
 
-const mapStateToProps = (state: IState, ownProps: any) => ({
-    zoom: state.zoom,
-    imageUrl: state.imageUrl
-});
-
-const mapDispatchToProps = (dispatch: any) => ({
-    onClick: (url: string) => dispatch(changeImg(url))
-});
-
-const ImageSetter = connect(mapStateToProps, mapDispatchToProps)(ImageController);
-
-export default ImageSetter;
-
+export default ZoomSetter;

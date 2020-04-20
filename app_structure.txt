@@ -1,0 +1,20 @@
+1) App Flow
+
+    a) Users must upload a pdf file 
+
+        a.obs.1) what others file types could they upload ? (it must be something related to ebooks)
+
+        a.obs.2) how to do a dropdown 
+
+    b) the pdf file must be splitted in pages each one a jpg file
+
+        b.obs.1) what others image types could user uploaded file be splitted in to ? (jpeg, png, ...)
+
+    c) how can users scroll through pages ? how to do it the most efficient way as possible ?
+
+        c.obs.1) maybe whe should only load from backend a small size of images 
+
+    d) how to zoom in and out a page (doing)
+
+    e) deffine how to save page editings (data base structure and all those things)
+

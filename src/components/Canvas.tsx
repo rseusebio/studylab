@@ -1,65 +1,18 @@
-import React, { useState, useEffect, ChangeEventHandler, ChangeEvent, FunctionComponent } from 'react';
-import styled from 'styled-components';
-import CanvasProps, { CanvasCoords, CanvasInternalStates } from '../types/CanvasClasses';
+import React, { useState, useEffect, FunctionComponent } from 'react';
+import CanvasProps, { CanvasInternalStates } from '../types/CanvasClasses';
 import {
-    CanvasContainer,
-    CanvasHeader,
     BoostedCanvas,
-    PanelOpener,
-    PanelContainer,
-    PanelControllers
+    CanvasFrame
 } from './Canvas.styles'
-import ImageSetter from '../containers/ImageSetter';
-import ImageComponent from '../components/ImagePage';
+import globalProps from '../globalProps';
 
-const IMG_SRC: string = "https://i.ytimg.com/vi/MPV2METPeJU/maxresdefault.jpg";
-const IMG_ID: string = "dog_image";
-
-const loadAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
-    const src: string = IMG_SRC;
-    const id: string = IMG_ID;
-    const img = document.getElementById(IMG_ID) as HTMLImageElement;
-    img.onload = () => {
-        // window.alert(`image loaded`);
-        console.info("img :: height", img.height, "width", img.width, "clientHeight", img.clientHeight, "clientWidth", img.clientWidth);
-        img.height = 500;
-        img.width = 500;
-        console.info("img :: height", img.height, "width", img.width, "clientHeight", img.clientHeight, "clientWidth", img.clientWidth);
-    }
-    img.src = src;
-}
-
-const canvasSizes = () => {
-    const heightPercent = 0.97;
-    const widthRatio = 0.9;
-    const height = window.innerHeight * heightPercent;
-    const width = height * widthRatio;
-    return { height, width }
-}
-
-const ControlPanel = () => {
-    const [open, setOpen] = useState(false);
-    return (
-        <PanelContainer className={open ? "open-panel" : ""}>
-            <PanelControllers>
-                <ImageSetter/>
-            </PanelControllers>
-            <PanelOpener onClick={() => { console.info(`setting open to ${!open}`); setOpen(!open); }} />
-        </PanelContainer>
-    )
-}
-
-const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
+const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
 
     //#region Component States
-    // I should work on how to zoom in and zoom out 
-    const { height, width } = canvasSizes();
-    const [canvasHeight, setCanvasHeight] = useState(height);
-    const [canvasWidth, setCanvasWidth] = useState(width);
+    const [canvasHeight, setCanvasHeight] = useState(globalProps.canvasHeight);
+    const [canvasWidth, setCanvasWidth] = useState(globalProps.canvasWidth);
     const [cursor, setCursor] = useState("default");
     useEffect(() => {
-        // loadAnImage(null);
-        // printAnImage(null);
         initKeyPressListeners();
     });
     //#endregion
@@ -70,22 +23,6 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     // because we don't want it to reload the screen
     const canvasState = new CanvasInternalStates();
     // #endregion
-
-    //this should reload the screen
-    const printAnImage = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent> | null) => {
-        const id: string = IMG_ID;
-        let img = document.getElementById(id) as HTMLImageElement;
-        if (!img) {
-            window.alert("failed ")
-            return;
-        }
-        let canvas = document.getElementById(props._id) as HTMLCanvasElement;
-        if (!canvas) {
-            return;
-        }
-        const ctx = canvas?.getContext("2d") as CanvasRenderingContext2D;
-        ctx.drawImage(img, 0, 0, 500, 500);
-    }
 
     // #region Mouse Events
     const mouseDownHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
@@ -267,18 +204,11 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     }
 
     return (
-        <CanvasContainer>
-            <ControlPanel />
-            {/* <div>
-                <p>canvas setting</p>
-                <input type="number" value={canvasHeight} onChange={handleHeightChange} />
-                <input type="number" value={canvasWidth} onChange={handleWidthChange} />
-            </div> */}
+        <CanvasFrame>
             <BoostedCanvas
                 height={canvasHeight}
                 width={canvasWidth}
                 id={props._id}
-                // style={{ cursor: cursor }}
                 onMouseDown={mouseDownHandler}
                 onMouseMove={mouseMovementHandler}
                 onMouseUp={mouseUpHandler}
@@ -286,12 +216,8 @@ const MyCanvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
                 onClick={mouseClickHandler}
 
             />
-            <ImageComponent/>
-
-        </CanvasContainer>
+        </CanvasFrame>
     )
 }
 
-
-
-export default MyCanvas;
+export default Canvas;
