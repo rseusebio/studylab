@@ -1,27 +1,46 @@
 import React, { FunctionComponent } from 'react';
 import './App.css';
-import Canvas from './components/Canvas';
-import CanvasProps from './types/CanvasClasses';
+import CanvasPage from './components/CanvasPage';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './reducers';
-import globalProps from './globalProps';
-
-const canvasProps: CanvasProps = { _id: globalProps.canvasId, key: "canvasProps" };
-
-const initialState: any = {
-  zoom: 100,
-  imageUrl: "<INSERT IMAGE URL>",
-}
+import { Switch, Route } from 'react-router-dom';
+import initialState from './reducers/init';
 
 const store = createStore(rootReducer, initialState);
 
 const App: FunctionComponent = () => {
   return (
     <Provider store={store}>
-      <Canvas {...canvasProps} />
-    </Provider>
 
+      <Switch>
+
+        <Route path="/upload">
+          <div>
+            <p>To be implemented</p>
+          </div>
+        </Route>
+
+        <Route path="/uploaded">
+          <div>
+            <p>To be implemented</p>
+          </div>
+        </Route>
+
+        <Route path="/edition">
+          <CanvasPage />
+        </Route>
+
+        <Route path="/">
+          <div>
+            <p>
+              Login
+            </p>
+          </div>
+        </Route>
+      </Switch>
+
+    </Provider>
   );
 }
 export default App;

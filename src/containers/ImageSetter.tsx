@@ -1,69 +1,51 @@
-import React, { FunctionComponent, useState } from 'react';
-import { connect, MapDispatchToProps } from 'react-redux'
+import React, { FunctionComponent } from 'react';
+import { connect } from 'react-redux'
 import { IState } from '../reducers';
 import { TextField, Button } from '@material-ui/core';
-import { changeImg } from '../actions';
-import globalProps from '../globalProps'
-interface ImageProps extends IState {
-    onClick: any;
+
+interface IImageSetterProps {
+    urlInputId: string,
+    drawImageAtCanvas: (imageUrl: string) => void
+    clearCanvas: () => void,
 }
 
-const ImageController: FunctionComponent<ImageProps> = (props: ImageProps) => {
-    const loadImageOnCanvas = (imgSrc: CanvasImageSource) => {
-        const canvas: HTMLCanvasElement = document.getElementById(globalProps.canvasId) as HTMLCanvasElement;
-        if (!canvas) {
-            return;
-        }
-        const context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
-        if (!context) {
-            return;
-        }
-        context.drawImage(imgSrc, 0, 0);
-    }
-    const setImageContent = (imgUrl: string) => {
-        const img: HTMLImageElement = document.getElementById(globalProps.imageId) as HTMLImageElement;
-        if (!img) {
-            return;
-        }
-        img.onload = (ev) => {
-            // ev.preventDefault();
-            loadImageOnCanvas(img as CanvasImageSource);
-        }
-        img.src = imgUrl;
-    }
+const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterProps) => {
+
     const btnClick = () => {
-        const textField: HTMLInputElement = document.getElementById(globalProps.urlInputId) as HTMLInputElement;
+        const textField: HTMLInputElement = document.getElementById(props.urlInputId) as HTMLInputElement;
         if (!textField) {
             return;
         }
-        setImageContent(textField.value);
+        props.drawImageAtCanvas(textField.value);
     }
+
+    console.info('ImageSetter: reloading');
+
     return (
         <div style={{ display: "flex", flexDirection: "column" }}>
             <TextField
-                id={globalProps.urlInputId}
+                id={props.urlInputId}
                 style={{ maxWidth: "", backgroundColor: 'white', }}
                 label={"Url"}
                 helperText={"<insert url here>"}
             />
             <br />
             <Button color="primary" onClick={btnClick}>
-                Set
+                SET CANVAS
+            </Button>
+            <Button color="primary" onClick={props.clearCanvas}>
+                CLEAR CANVAS
             </Button>
         </div>
     );
 }
 
 const mapStateToProps = (state: IState, ownProps: any) => ({
-    zoom: state.zoom,
-    imageUrl: state.imageUrl
+    urlInputId: state.urlInputId,
+    drawImageAtCanvas: state.drawImageAtCanvas,
+    clearCanvas: state.clearCanvas,
 });
 
-const mapDispatchToProps = (dispatch: any) => ({
-    onClick: (url: string) => dispatch(changeImg(url))
-});
 
-const ImageSetter = connect(mapStateToProps, mapDispatchToProps)(ImageController);
-
-export default ImageSetter;
+export default connect(mapStateToProps, undefined)(ImageSetter);
 

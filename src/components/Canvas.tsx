@@ -1,16 +1,25 @@
 import React, { useState, useEffect, FunctionComponent } from 'react';
-import CanvasProps, { CanvasInternalStates } from '../types/CanvasClasses';
+import { CanvasInternalStates } from '../types/CanvasClasses';
 import {
     BoostedCanvas,
-    CanvasFrame
 } from './Canvas.styles'
-import globalProps from '../globalProps';
+import CanvasFrame from './CanvasFrame';
+import { connect } from 'react-redux';
+import { IState } from '../reducers';
 
-const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
+interface ICanvasProps {
+    canvasId: string,
+    zoom: number,
+    canvasHeight: number,
+    canvasWidth: number,
+    drawImageAtCanvas: (imgUrl: string) => void
+}
+
+const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
 
     //#region Component States
-    const [canvasHeight, setCanvasHeight] = useState(globalProps.canvasHeight);
-    const [canvasWidth, setCanvasWidth] = useState(globalProps.canvasWidth);
+
+    // this should change according to className and not state;
     const [cursor, setCursor] = useState("default");
     useEffect(() => {
         initKeyPressListeners();
@@ -39,7 +48,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         canvasState.Drawing = false;
     }
     const mouseMovementHandler = (ev: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        const canvas: any = document.getElementById(props._id) as HTMLCanvasElement;
+        const canvas: any = document.getElementById(props.canvasId) as HTMLCanvasElement;
         if (!canvas) {
             return;
         }
@@ -93,31 +102,13 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     }
     // #endregion
 
-    // #region Canvas Size Change Handlers
-    const handleHeightChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-        const value: number = parseInt(ev.target.value);
-        if (isNaN(value)) {
-            return;
-        }
-        console.info(`height value: ${value}`);
-        setCanvasHeight(value);
-    }
-    const handleWidthChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-        const value: number = parseInt(ev.target.value);
-        if (isNaN(value)) {
-            return;
-        }
-        console.info(`height value: ${value}`);
-        setCanvasWidth(value);
-    }
-    // #endregion 
 
     // #region Types of brackets
     // round brackets or parentheses ()
     const drawingRoundBrackets = (isOpen: boolean) => { }
     // square brackets []
     const drawingSquareBrackets = (isOpen: boolean) => {
-        let canvas: any = document.getElementById(props._id);
+        let canvas: any = document.getElementById(props.canvasId);
         // canvas as HTMLCanvasElement;
         if (!canvas) {
             return;
@@ -150,7 +141,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     // curly brackets or braces {} 
     const drawingCurlyBrackets = (isOpen: boolean) => {
         // Getting canvas by id and checking if it exists
-        let canvas: any = document.getElementById(props._id);
+        let canvas: any = document.getElementById(props.canvasId);
         if (!canvas) {
             return;
         }
@@ -195,7 +186,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
     // #endregion
 
     const initKeyPressListeners = () => {
-        let canvas = document.getElementById(props._id);
+        let canvas = document.getElementById(props.canvasId);
         if (!canvas) {
             return;
         }
@@ -203,21 +194,29 @@ const Canvas: FunctionComponent<CanvasProps> = (props: CanvasProps) => {
         window.onkeyup = keyUpHandler;
     }
 
+    console.info(`Canvas :: reloading!`, props);
     return (
-        <CanvasFrame>
-            <BoostedCanvas
-                height={canvasHeight}
-                width={canvasWidth}
-                id={props._id}
-                onMouseDown={mouseDownHandler}
-                onMouseMove={mouseMovementHandler}
-                onMouseUp={mouseUpHandler}
-                onMouseLeave={mouseUpHandler}
-                onClick={mouseClickHandler}
-
-            />
-        </CanvasFrame>
-    )
+        <CanvasFrame
+            children={
+                <BoostedCanvas
+                    height={props.canvasHeight * props.zoom}
+                    width={props.canvasWidth * props.zoom}
+                    id={props.canvasId}
+                    onMouseDown={mouseDownHandler}
+                    onMouseMove={mouseMovementHandler}
+                    onMouseUp={mouseUpHandler}
+                    onMouseLeave={mouseUpHandler}
+                    onClick={mouseClickHandler}
+                />}
+        />);
 }
 
-export default Canvas;
+const mapStateToProps = (state: IState, ownProps: any) => ({
+    canvasId: state.canvasId,
+    zoom: state.zoom,
+    canvasHeight: state.canvasHeight,
+    canvasWidth: state.canvasWidth,
+    drawImageAtCanvas: state.drawImageAtCanvas,
+});
+
+export default connect(mapStateToProps, undefined)(Canvas);

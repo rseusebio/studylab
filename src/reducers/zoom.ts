@@ -1,6 +1,7 @@
 import { Actions, ZoomAction } from '../actions/index';
+import { _zoom } from './init';
 
-const zoom = (state: number = 100, action: ZoomAction) => {
+const zoom = (state: number = _zoom, action: ZoomAction) => {
     switch (action.type) {
         case Actions.ZOOM_IN:
             return state + action.percentage;

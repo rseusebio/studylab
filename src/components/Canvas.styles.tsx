@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import globalProps from '../globalProps';
 
 const CanvasContainer = styled.div`
     height: 100vh;
@@ -36,20 +35,14 @@ const CanvasHeader = styled.h3`
 const BoostedCanvas = styled.canvas`
     padding: 0mm;
     margin: 0mm;
-    border 0.1mm solid white;
     background-color: white;
     cursor: crosshair;
 `;
 
-const CanvasFrame = styled.div`
-    height: ${globalProps.canvasHeight}px;
-    width: ${globalProps.canvasWidth}px;
-    border: 1px color blue;
-`;
+
 
 export {
     CanvasContainer,
     CanvasHeader,
     BoostedCanvas,
-    CanvasFrame,
 }

@@ -1,15 +1,24 @@
 import React, { FunctionComponent } from 'react';
-import globalProps from '../globalProps';
+import { connect } from 'react-redux';
+import { IState } from '../reducers';
 
-const ImageComponent: FunctionComponent<any> = (props: any) => {
+interface IImagePageProps {
+    imageId: string,
+}
+
+const ImagePage: FunctionComponent<IImagePageProps> = (props: IImagePageProps) => {
     const styleObject = {
         display: 'none',
     }
+    console.info('ImagePage: reloading');
     return (
         <div style={styleObject}>
-            <img id={globalProps.imageId} />
+            <img id={props.imageId} />
         </div>
     );
 }
 
-export default ImageComponent;
+const mapStateToProps = (state: IState, ownProps: any) => ({ imageId: state.imageId });
+
+
+export default connect(mapStateToProps, undefined)(ImagePage);;
