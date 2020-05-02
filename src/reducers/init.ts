@@ -30,14 +30,15 @@ const _getImageSize = (canvas: HTMLCanvasElement, imgSrc: CanvasImageSource) => 
 const _loadImageOnCanvas = (imgSrc: CanvasImageSource) => {
     const canvas: HTMLCanvasElement = document.getElementById(_canvasId) as HTMLCanvasElement;
     if (!canvas) {
-        return;
+        return false;
     }
     const context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
     if (!context) {
-        return;
+        return false;
     }
     let imgSizes = _getImageSize(canvas, imgSrc);
-    context.drawImage(imgSrc, 0, 0, imgSrc.width as number, imgSrc.height as number, 0, 0, imgSizes.width as number, imgSizes.height as number);
+    context.drawImage(imgSrc, 0, 0, imgSrc.width as number, imgSrc.height as number, 0, 0, canvas.width as number, canvas.height as number);
+    return true;
 }
 
 //#region Defining Inital State Variables
@@ -52,13 +53,19 @@ const _imageUrl = "";
 const _drawImageAtCanvas = (imgUrl: string = _imageUrl) => {
     const img: HTMLImageElement = document.getElementById(_imageId) as HTMLImageElement;
     if (!img) {
-        return;
+        return false;
     }
-    img.onload = (ev) => {
-        // ev.preventDefault();
-        _loadImageOnCanvas(img as CanvasImageSource);
+    if (imgUrl == "" && img.src != "") {
+        return _loadImageOnCanvas(img as CanvasImageSource);
     }
-    img.src = imgUrl;
+    else {
+        img.onload = (ev) => {
+            // ev.preventDefault();
+            _loadImageOnCanvas(img as CanvasImageSource);
+        }
+        img.src = imgUrl;
+        return true;
+    }
 }
 
 const _clearCanvas = () => {

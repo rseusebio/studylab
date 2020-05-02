@@ -5,7 +5,7 @@ import { TextField, Button } from '@material-ui/core';
 
 interface IImageSetterProps {
     urlInputId: string,
-    drawImageAtCanvas: (imageUrl: string) => void
+    drawImageAtCanvas: (imageUrl: string) => boolean
     clearCanvas: () => void,
 }
 
@@ -16,7 +16,10 @@ const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterPr
         if (!textField) {
             return;
         }
-        props.drawImageAtCanvas(textField.value);
+        if( !props.drawImageAtCanvas(textField.value) )
+        {
+            console.error("could not Save image");
+        }
     }
 
     console.info('ImageSetter: reloading');

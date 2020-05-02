@@ -28,7 +28,7 @@ export interface IState {
     canvasHeight: number,
     canvasWidth: number,
 
-    drawImageAtCanvas: (imageUrl: string) => void,
+    drawImageAtCanvas: (imageUrl: string) => boolean,
     clearCanvas: () => void,
 }
 

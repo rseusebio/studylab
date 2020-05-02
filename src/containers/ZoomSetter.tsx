@@ -10,7 +10,7 @@ import { IState } from '../reducers';
 interface IZoom {
     zoomIn: () => void,
     zoomOut: () => void,
-    drawImageAtCanvas: (imgUrl: string) => void,
+    drawImageAtCanvas: (imgUrl: string) => boolean,
     imageUrl: string,
 }
 

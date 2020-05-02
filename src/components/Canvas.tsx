@@ -12,7 +12,7 @@ interface ICanvasProps {
     zoom: number,
     canvasHeight: number,
     canvasWidth: number,
-    drawImageAtCanvas: (imgUrl: string) => void
+    drawImageAtCanvas: (imgUrl: string) => boolean
 }
 
 const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
@@ -22,7 +22,11 @@ const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
     // this should change according to className and not state;
     const [cursor, setCursor] = useState("default");
     useEffect(() => {
+        console.info('is it running ?');
         initKeyPressListeners();
+        if (!props.drawImageAtCanvas("")) {
+            console.error("could not draw image!");
+        }
     });
     //#endregion
 
