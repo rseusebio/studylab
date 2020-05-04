@@ -1,4 +1,4 @@
-enum Actions {
+ enum Actions {
     ZOOM_IN = 1,
     ZOOM_OUT,
     IMG_CHANGE,

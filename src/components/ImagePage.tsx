@@ -13,12 +13,15 @@ const ImagePage: FunctionComponent<IImagePageProps> = (props: IImagePageProps) =
     console.info('ImagePage: reloading');
     return (
         <div style={styleObject}>
-            <img id={props.imageId} />
+            <img id={props.imageId} onLoad={()=>{}} />
         </div>
     );
 }
 
 const mapStateToProps = (state: IState, ownProps: any) => ({ imageId: state.imageId });
+const mapDispatchToProps = (state: IState, ownProps: any) => (
+    {
 
+    });
 
 export default connect(mapStateToProps, undefined)(ImagePage);;

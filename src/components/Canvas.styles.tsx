@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const CanvasContainer = styled.div`
+const PageContainer = styled.div`
     height: 100vh;
     width: 100vw;
     padding: 0mm;
@@ -42,7 +42,7 @@ const BoostedCanvas = styled.canvas`
 
 
 export {
-    CanvasContainer,
+    PageContainer,
     CanvasHeader,
     BoostedCanvas,
 }

@@ -1,11 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import './App.css';
-import CanvasPage from './components/CanvasPage';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import rootReducer from './reducers';
-import { Switch, Route } from 'react-router-dom';
-import initialState from './reducers/init';
+import React, { FunctionComponent }   from    'react';
+import CanvasPage                     from    './components/CanvasPage';
+import { Provider }                   from    'react-redux';
+import { createStore }                from    'redux';
+import rootReducer                    from    './reducers';
+import { Switch, Route }              from    'react-router-dom';
+import initialState                   from    './reducers/init';
 
 const store = createStore(rootReducer, initialState);
 

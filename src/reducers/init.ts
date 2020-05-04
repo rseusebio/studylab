@@ -12,19 +12,17 @@ const canvasSizes = () => {
 const _getImageSize = (canvas: HTMLCanvasElement, imgSrc: CanvasImageSource) => {
     console.info(`imgSrc: height: ${imgSrc.height}, width: ${imgSrc.width}`);
     console.info(`canvas :: height: ${canvas.height},width: ${canvas.width}`);
-    let imgSizes = {
-        width: imgSrc.width,
-        height: imgSrc.height
-    }
+    let imgWidth = imgSrc.width;
+    let imgHeight = imgSrc.height;
     if (imgSrc.width > imgSrc.height && imgSrc.width > canvas.width) {
-        imgSizes.width = canvas.width as number;
-        imgSizes.height = (canvas.width * (imgSrc.height as number)) / (imgSrc.width as number);
+        imgWidth = canvas.width as number;
+        imgHeight = (canvas.width * (imgSrc.height as number)) / (imgSrc.width as number);
     }
     else if (imgSrc.height > canvas.height) {
-        imgSizes.height = canvas.height as number;
-        imgSizes.width = (canvas.height * (imgSrc.width as number)) / (imgSrc.height as number);
+        imgHeight = canvas.height as number;
+        imgWidth = (canvas.height * (imgSrc.width as number)) / (imgSrc.height as number);
     }
-    return imgSizes;
+    return {imgHeight, imgWidth};
 }
 
 const _loadImageOnCanvas = (imgSrc: CanvasImageSource) => {
@@ -36,8 +34,8 @@ const _loadImageOnCanvas = (imgSrc: CanvasImageSource) => {
     if (!context) {
         return false;
     }
-    let imgSizes = _getImageSize(canvas, imgSrc);
-    context.drawImage(imgSrc, 0, 0, imgSrc.width as number, imgSrc.height as number, 0, 0, canvas.width as number, canvas.height as number);
+    let {imgHeight, imgWidth} = _getImageSize(canvas, imgSrc);
+    context.drawImage(imgSrc, 0, 0, imgSrc.width as number, imgSrc.height as number, 0, 0, imgHeight as number, imgWidth as number);
     return true;
 }
 
@@ -47,8 +45,10 @@ const _canvasId = "myCanvas";
 const _urlInputId = "myUrlInput";
 
 const { _canvasHeight, _canvasWidth } = canvasSizes();
-const _zoom = 1;
-const _imageUrl = "";
+const _zoom                           = 1;
+const _imageUrl                       = "";
+const _imageWidth                     = _canvasWidth;
+const _imageHeight                    = _canvasHeight;
 
 const _drawImageAtCanvas = (imgUrl: string = _imageUrl) => {
     const img: HTMLImageElement = document.getElementById(_imageId) as HTMLImageElement;
@@ -102,6 +102,7 @@ const initialState = {
     imageUrl: _imageUrl,
     canvasHeight: _canvasHeight,
     canvasWidth: _canvasWidth,
+    
     drawImageAtCanvas: _drawImageAtCanvas,
     clearCanvas: _clearCanvas,
 }
