@@ -3,13 +3,15 @@ import {BoostedCanvas}                                      from    './Canvas.st
 import { connect }                                          from    'react-redux';
 import { IState }                                           from    '../reducers';
 import CanvasManager                                        from    '../classes/CanvasManager';
+import { CanvasSize }                                       from '../reducers/canvasSize';
 
 interface ICanvasProps {
     canvasId: string,
     zoom: number,
     canvasHeight: number,
     canvasWidth: number,
-    drawImageAtCanvas: (imgUrl: string) => boolean
+    drawImageAtCanvas: (imgUrl: string) => boolean,
+    canvasSize: CanvasSize
 }
 
 
@@ -18,8 +20,10 @@ const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
     // it must be a state because it should not reload every time the component do.
     const [manager] = useState(new CanvasManager());
 
-    const canvasHeight = props.canvasHeight * props.zoom;
-    const canvasWidth = props.canvasWidth * props.zoom;
+    // const canvasHeight = props.canvasHeight * props.zoom;
+    // const canvasWidth = props.canvasWidth * props.zoom;
+    const canvasHeight      = props.canvasSize.height * props.zoom;
+    const canvasWidth       = props.canvasSize.width  * props.zoom;
 
     const initKeyPressListeners = () => {
         window.onkeydown    = (ev: KeyboardEvent) => manager.KeyDown(ev.keyCode.toString());
@@ -53,6 +57,7 @@ const mapStateToProps = (state: IState, ownProps: any) => ({
     canvasHeight: state.canvasHeight,
     canvasWidth: state.canvasWidth,
     drawImageAtCanvas: state.drawImageAtCanvas,
+    canvasSize: state.canvasSize, 
 });
 
 export default connect(mapStateToProps, undefined)(Canvas);

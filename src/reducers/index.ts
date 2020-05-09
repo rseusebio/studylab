@@ -1,6 +1,7 @@
-import { combineReducers } from 'redux'
-import zoom from './zoom';
-import imageUrl from './image';
+import { combineReducers }               from 'redux'
+import zoom                              from './zoom';
+import imageUrl                          from './image';
+import canvasSize, { CanvasSize }        from './canvasSize';
 import {
     imageId,
     canvasId,
@@ -9,10 +10,12 @@ import {
     canvasWidth,
     drawImageAtCanvas,
     clearCanvas,
+    setImageSource, 
+
 } from './init';
 
 
-// here we are defining are state structure:
+// here we are defining the state structure:
 /*
 * it will have a string field called zoom and another string field called imageUrl
 */
@@ -28,8 +31,11 @@ export interface IState {
     canvasHeight: number,
     canvasWidth: number,
 
+    canvasSize: CanvasSize,
+
     drawImageAtCanvas: (imageUrl: string) => boolean,
     clearCanvas: () => void,
+    setImageSourcer: (imageUrl: string) => boolean,
 }
 
 
@@ -44,7 +50,10 @@ const rootReducer = combineReducers({
     canvasHeight,
     canvasWidth,
     drawImageAtCanvas,
-    clearCanvas
+    clearCanvas,
+    setImageSource,
+
+    canvasSize,
 });
 
 

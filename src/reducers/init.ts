@@ -1,4 +1,4 @@
-const canvasSizes = () => {
+const defaultCanvasSizes = () => {
     const canvasHeightPercentage = 0.97;
     const canvasWidthHeightRatio = 0.9;
     const canvasHeight = window.innerHeight * canvasHeightPercentage;
@@ -44,11 +44,12 @@ const _imageId = "myImage";
 const _canvasId = "myCanvas";
 const _urlInputId = "myUrlInput";
 
-const { _canvasHeight, _canvasWidth } = canvasSizes();
+const { _canvasHeight, _canvasWidth } = defaultCanvasSizes();
 const _zoom                           = 1;
 const _imageUrl                       = "";
 const _imageWidth                     = _canvasWidth;
 const _imageHeight                    = _canvasHeight;
+const _canvasSize                     = { width: _canvasWidth, height: _canvasHeight};
 
 const _drawImageAtCanvas = (imgUrl: string = _imageUrl) => {
     const img: HTMLImageElement = document.getElementById(_imageId) as HTMLImageElement;
@@ -66,6 +67,15 @@ const _drawImageAtCanvas = (imgUrl: string = _imageUrl) => {
         img.src = imgUrl;
         return true;
     }
+}
+
+const _setImageSource = (imgUrl: string = _imageUrl): boolean => {
+    const img: HTMLImageElement = document.getElementById(_imageId) as HTMLImageElement;
+    if (!img || !imgUrl) {
+        return false;
+    }
+    img.src = imgUrl;
+    return true;
 }
 
 const _clearCanvas = () => {
@@ -89,22 +99,26 @@ const canvasHeight = (state: number = _canvasHeight, action: any) => (state);
 const canvasWidth = (state: number = _canvasWidth, action: any) => (state);
 const drawImageAtCanvas = (state: Function = _drawImageAtCanvas, action: any) => (state);
 const clearCanvas = (state: Function = _clearCanvas, action: any) => (state);
+const setImageSource = (state: Function = _setImageSource, action: any) => (state);
 ////#endregion
 
 
 const initialState = {
     // constants
-    imageId: _imageId,
-    canvasId: _canvasId,
-    urlInputId: _urlInputId,
+    imageId:            _imageId,
+    canvasId:           _canvasId,
+    urlInputId:         _urlInputId,
     // variables
-    zoom: _zoom,
-    imageUrl: _imageUrl,
-    canvasHeight: _canvasHeight,
-    canvasWidth: _canvasWidth,
+    zoom:               _zoom,
+    imageUrl:           _imageUrl,
+    canvasHeight:       _canvasHeight,
+    canvasWidth:        _canvasWidth,
+
+    canvasSize:         _canvasSize,
     
-    drawImageAtCanvas: _drawImageAtCanvas,
-    clearCanvas: _clearCanvas,
+    drawImageAtCanvas:  _drawImageAtCanvas,
+    clearCanvas:        _clearCanvas,
+    setImageSource:     _setImageSource,
 }
 
 export default initialState;
@@ -116,7 +130,10 @@ export {
     canvasWidth,
     drawImageAtCanvas,
     clearCanvas,
+    setImageSource,
 
     _imageUrl,
-    _zoom
+    _zoom,
+
+    defaultCanvasSizes
 }

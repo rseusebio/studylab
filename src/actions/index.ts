@@ -2,6 +2,7 @@
     ZOOM_IN = 1,
     ZOOM_OUT,
     IMG_CHANGE,
+    CANVAS_SIZE_CHANGE, 
 }
 
 const zoomIn = (percentage: number) => ({
@@ -19,6 +20,12 @@ const changeImg = (imgUrl: string) => ({
     imgUrl
 })
 
+const changeCanvasSize = (target: EventTarget & HTMLImageElement) => ({
+    type: Actions.CANVAS_SIZE_CHANGE,
+    imgWidth: target.width,
+    imgHeight: target.height,
+});
+
 interface ActionPayload {
     type: Actions
 }
@@ -31,9 +38,16 @@ export interface ImageAction extends ActionPayload {
     imgUrl: string
 }
 
+export interface CanvasSizeAction extends ActionPayload {
+    imgWidth: number, 
+    imgHeight: number, 
+}
+
 export {
     Actions,
+        
     zoomIn,
     zoomOut,
-    changeImg
+    changeImg,
+    changeCanvasSize
 }
