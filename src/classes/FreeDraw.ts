@@ -35,19 +35,27 @@ export default class FreeDraw extends Draw {
         ctx.stroke();
     }
 
-    drawAll(canvasId: string) {
-        let ctx = this.getContext(canvasId);
+    drawAll (canvasId: string) {
+        const ctx                           = this.getContext(canvasId);
+        const { canvasWidth, canvasHeight } = this.getCurrentCanvasSize(canvasId);
 
-        ctx.beginPath();
+        ctx.beginPath ();
         ctx.strokeStyle = this._color;
-        this._path.forEach((coord, index) => {
+        this._path.forEach ( (coord, index) => {
 
             if (index > 0) {
                 const previousCoord = this._path[index - 1];
-                ctx.moveTo(previousCoord.X, previousCoord.Y);
-            }
 
-            ctx.lineTo(coord.X, coord.Y);
+                const prevX = previousCoord.X * canvasHeight / this.CanvasHeight;
+                const prevY = previousCoord.Y * canvasWidth  / this.CanvasWidth;
+
+                ctx.moveTo(prevX, prevY);
+            }
+ 
+            const x =  coord.X * canvasHeight / this.CanvasHeight;
+            const y =  coord.Y * canvasWidth  / this.CanvasWidth;
+
+            ctx.lineTo(x, y);
             ctx.stroke();
         });
     }

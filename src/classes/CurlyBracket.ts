@@ -7,38 +7,53 @@ export default class CulyBracket extends Bracket {
         super(DrawTypes.Curly, x, y, h, w, c, s, cw, ch);
     }
 
-    draw(canvasId: string): void {
+    draw(canvasId: string, reDrawing: boolean = false): void {
 
         let ctx = this.getContext(canvasId);
+
+        let height  = this.Height;
+        let width   = this.Width;
+        let x       = this.X;
+        let y       = this.Y;
+
+        if (reDrawing) {
+            let { canvasWidth, canvasHeight } = this.getCurrentCanvasSize(canvasId);
+
+            height      =    this.Height    *   canvasHeight  / this.CanvasHeight;
+            width       =    this.Width     *   canvasWidth   / this.CanvasWidth;
+            x           =    this.X         *   canvasHeight  / this.CanvasHeight;
+            y           =    this.Y         *   canvasWidth   / this.CanvasWidth;
+        }
         
-        ctx.lineWidth = this.Width;
+        
+        ctx.lineWidth = width;
         ctx.strokeStyle = this.Color;
-        let halfSize: number = this.Height / 2;
-        let quarterSize: number = this.Height / 4;
-        let oneEighthSize: number = this.Height / 8;
+        let halfSize: number = height / 2;
+        let quarterSize: number = height / 4;
+        let oneEighthSize: number = height / 8;
         let radius: number = oneEighthSize;
 
         if (this.State == BracketState.Opened) {
-            ctx.moveTo(this.X - oneEighthSize, this.Y);
-            ctx.arcTo(this.X, this.Y, this.X, this.Y - oneEighthSize, radius);
-            ctx.lineTo(this.X, this.Y - oneEighthSize - quarterSize);
-            ctx.arcTo(this.X, this.Y - halfSize, this.X + oneEighthSize, this.Y - halfSize, radius);
+            ctx.moveTo(x - oneEighthSize, y);
+            ctx.arcTo(x, y, x, y - oneEighthSize, radius);
+            ctx.lineTo(x, y - oneEighthSize - quarterSize);
+            ctx.arcTo(x, y - halfSize, x + oneEighthSize, y - halfSize, radius);
 
-            ctx.moveTo(this.X - oneEighthSize, this.Y);
-            ctx.arcTo(this.X, this.Y, this.X, this.Y + oneEighthSize, radius);
-            ctx.lineTo(this.X, this.Y + oneEighthSize + quarterSize);
-            ctx.arcTo(this.X, this.Y + halfSize, this.X + oneEighthSize, this.Y + halfSize, radius);
+            ctx.moveTo(x - oneEighthSize, y);
+            ctx.arcTo(x, y, x, y + oneEighthSize, radius);
+            ctx.lineTo(x, y + oneEighthSize + quarterSize);
+            ctx.arcTo(x, y + halfSize, x + oneEighthSize, y + halfSize, radius);
         }
         else {
-            ctx.moveTo(this.X + oneEighthSize, this.Y);
-            ctx.arcTo(this.X, this.Y, this.X, this.Y - oneEighthSize, radius);
-            ctx.lineTo(this.X, this.Y - oneEighthSize - quarterSize);
-            ctx.arcTo(this.X, this.Y - halfSize, this.X - oneEighthSize, this.Y - halfSize, radius);
+            ctx.moveTo(x + oneEighthSize, y);
+            ctx.arcTo(x, y, x, y - oneEighthSize, radius);
+            ctx.lineTo(x, y - oneEighthSize - quarterSize);
+            ctx.arcTo(x, y - halfSize, x - oneEighthSize, y - halfSize, radius);
 
-            ctx.moveTo(this.X + oneEighthSize, this.Y);
-            ctx.arcTo(this.X, this.Y, this.X, this.Y + oneEighthSize, radius);
-            ctx.lineTo(this.X, this.Y + oneEighthSize + quarterSize);
-            ctx.arcTo(this.X, this.Y + halfSize, this.X - oneEighthSize, this.Y + halfSize, radius);
+            ctx.moveTo(x + oneEighthSize, y);
+            ctx.arcTo(x, y, x, y + oneEighthSize, radius);
+            ctx.lineTo(x, y + oneEighthSize + quarterSize);
+            ctx.arcTo(x, y + halfSize, x - oneEighthSize, y + halfSize, radius);
         }
 
         ctx.stroke();

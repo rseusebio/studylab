@@ -39,6 +39,25 @@ const _loadImageOnCanvas = (imgSrc: CanvasImageSource) => {
     return true;
 }
 
+
+const _loadImage = (): boolean => {
+    const imgSrc: HTMLImageElement = document.getElementById(_imageId) as HTMLImageElement;
+    if (!imgSrc) {
+        return false;
+    }
+    const canvas: HTMLCanvasElement = document.getElementById(_canvasId) as HTMLCanvasElement;
+    if (!canvas) {
+        return false;
+    }
+    const context: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+    if (!context) {
+        return false;
+    }
+    let {imgHeight, imgWidth} = _getImageSize(canvas, imgSrc);
+    context.drawImage(imgSrc, 0, 0, imgSrc.width as number, imgSrc.height as number, 0, 0,canvas.width, canvas.height);
+    return true;
+}
+
 //#region Defining Inital State Variables
 const _imageId = "myImage";
 const _canvasId = "myCanvas";
@@ -98,6 +117,7 @@ const urlInputId = (state: string = _urlInputId, action: any) => (state);
 const canvasHeight = (state: number = _canvasHeight, action: any) => (state);
 const canvasWidth = (state: number = _canvasWidth, action: any) => (state);
 const drawImageAtCanvas = (state: Function = _drawImageAtCanvas, action: any) => (state);
+const loadImageOnCanvas = (state: Function = _loadImage, action: any) => (state);
 const clearCanvas = (state: Function = _clearCanvas, action: any) => (state);
 const setImageSource = (state: Function = _setImageSource, action: any) => (state);
 ////#endregion
@@ -119,6 +139,7 @@ const initialState = {
     drawImageAtCanvas:  _drawImageAtCanvas,
     clearCanvas:        _clearCanvas,
     setImageSource:     _setImageSource,
+    loadImageOnCanvas:  _loadImage, 
 }
 
 export default initialState;
@@ -129,6 +150,7 @@ export {
     canvasHeight,
     canvasWidth,
     drawImageAtCanvas,
+    loadImageOnCanvas,
     clearCanvas,
     setImageSource,
 

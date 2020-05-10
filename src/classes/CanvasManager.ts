@@ -160,7 +160,7 @@ export default class CanvasManager {
                     (draw as FreeDraw).drawAll(canvasId);
                     break;
                 case DrawTypes.Curly:
-                    (draw as CurlyBracket).draw(canvasId);
+                    (draw as CurlyBracket).draw(canvasId, true);
                     break;
                 default:
                 case DrawTypes.Square:

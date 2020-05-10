@@ -17,10 +17,10 @@ export default class SquareBracket extends Brackets {
         if (reDrawing) {
             let { canvasWidth, canvasHeight } = this.getCurrentCanvasSize(canvasId);
 
-            height      =    this.Height * canvasHeight / this.CanvasHeight;
-            width       =    this.Width * canvasWidth / this.CanvasWidth;
-            x           =    this.X *   this.CanvasWidth / canvasWidth;
-            y           =    this.Y * this.CanvasHeight / canvasHeight;
+            height      =    this.Height    *   canvasHeight  / this.CanvasHeight;
+            width       =    this.Width     *   canvasWidth   / this.CanvasWidth;
+            x           =    this.X         *   canvasHeight  / this.CanvasHeight;
+            y           =    this.Y         *   canvasWidth   / this.CanvasWidth;
         }
         
 

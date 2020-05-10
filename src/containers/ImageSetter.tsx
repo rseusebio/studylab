@@ -5,8 +5,9 @@ import { TextField, Button } from '@material-ui/core';
 
 interface IImageSetterProps {
     urlInputId: string,
-    drawImageAtCanvas: (imageUrl: string) => boolean
+    drawImageAtCanvas: (imageUrl: string) => boolean, 
     clearCanvas: () => void,
+    setImageSource: (imageUrl: string) => boolean
 }
 
 const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterProps) => {
@@ -22,6 +23,18 @@ const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterPr
         }
     }
 
+    const newBtnClick = () => {
+        const textField: HTMLInputElement = document.getElementById(props.urlInputId) as HTMLInputElement;
+        if (!textField) {
+            console.error(`Could not get text field element: ${props.urlInputId}.`);
+            return;
+        }
+        if (!props.setImageSource(textField.value))
+        {
+            console.error(`Could not set image source.`);
+        }
+    }
+
     console.info('ImageSetter: reloading');
 
     return (
@@ -33,7 +46,7 @@ const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterPr
                 helperText={"<insert url here>"}
             />
             <br />
-            <Button color="primary" onClick={btnClick}>
+            <Button color="primary" onClick={newBtnClick}>
                 SET CANVAS
             </Button>
             <Button color="primary" onClick={props.clearCanvas}>
@@ -47,6 +60,7 @@ const mapStateToProps = (state: IState, ownProps: any) => ({
     urlInputId: state.urlInputId,
     drawImageAtCanvas: state.drawImageAtCanvas,
     clearCanvas: state.clearCanvas,
+    setImageSource: state.setImageSource
 });
 
 

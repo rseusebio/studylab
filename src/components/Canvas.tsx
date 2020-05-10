@@ -10,7 +10,7 @@ interface ICanvasProps {
     zoom: number,
     canvasHeight: number,
     canvasWidth: number,
-    drawImageAtCanvas: (imgUrl: string) => boolean,
+    loadImageOnCanvas: () => boolean,
     canvasSize: CanvasSize
 }
 
@@ -20,10 +20,11 @@ const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
     // it must be a state because it should not reload every time the component do.
     const [manager] = useState(new CanvasManager());
 
-    // const canvasHeight = props.canvasHeight * props.zoom;
-    // const canvasWidth = props.canvasWidth * props.zoom;
+    
     const canvasHeight      = props.canvasSize.height * props.zoom;
     const canvasWidth       = props.canvasSize.width  * props.zoom;
+
+    console.info(`canvasHeight: `, canvasHeight, 'canvasWidth: ', canvasWidth, 'canvasSize: ', props.canvasSize);
 
     const initKeyPressListeners = () => {
         window.onkeydown    = (ev: KeyboardEvent) => manager.KeyDown(ev.keyCode.toString());
@@ -32,7 +33,7 @@ const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
     
     useEffect(() => {
         initKeyPressListeners ();
-        if (!props.drawImageAtCanvas ("")) {
+        if (!props.loadImageOnCanvas ()) {
             console.error ("could not draw image!");
         }
         manager.ReDraw (props.canvasId);
@@ -56,7 +57,7 @@ const mapStateToProps = (state: IState, ownProps: any) => ({
     zoom: state.zoom,
     canvasHeight: state.canvasHeight,
     canvasWidth: state.canvasWidth,
-    drawImageAtCanvas: state.drawImageAtCanvas,
+    loadImageOnCanvas: state.loadImageOnCanvas,
     canvasSize: state.canvasSize, 
 });
 
