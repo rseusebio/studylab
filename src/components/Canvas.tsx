@@ -2,29 +2,27 @@ import React, { useState, useEffect, FunctionComponent }    from    'react';
 import {BoostedCanvas}                                      from    './Canvas.styles'
 import { connect }                                          from    'react-redux';
 import { IState }                                           from    '../reducers';
-import CanvasManager                                        from    '../classes/CanvasManager';
-import { CanvasSize }                                       from '../reducers/canvasSize';
+import CanvasDrawManager                                    from    '../classes/CanvasDrawManager';
+import { CanvasSize }                                       from    '../reducers/canvasSize';
+import CanvasUtilities                                      from    '../classes/CanvasUtilities';
 
 interface ICanvasProps {
-    canvasId: string,
-    zoom: number,
-    canvasHeight: number,
-    canvasWidth: number,
-    loadImageOnCanvas: () => boolean,
-    canvasSize: CanvasSize
+    zoom:               number,
+    loadImageOnCanvas:  () => boolean,
+    canvasSize:         CanvasSize
 }
-
 
 const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
 
     // it must be a state because it should not reload every time the component do.
-    const [manager] = useState(new CanvasManager());
+    const [drawingCursor, setCursor] = useState(false);
+    const [manager] = useState(new CanvasDrawManager (setCursor));
 
     
     const canvasHeight      = props.canvasSize.height * props.zoom;
     const canvasWidth       = props.canvasSize.width  * props.zoom;
 
-    console.info(`canvasHeight: `, canvasHeight, 'canvasWidth: ', canvasWidth, 'canvasSize: ', props.canvasSize);
+    console.info(`canvasHeight: `, canvasHeight, 'canvasWidth: ', canvasWidth, 'canvasSize: ', props.canvasSize, 'zoom: ', props.zoom);
 
     const initKeyPressListeners = () => {
         window.onkeydown    = (ev: KeyboardEvent) => manager.KeyDown(ev.keyCode.toString());
@@ -35,28 +33,27 @@ const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
         initKeyPressListeners ();
         if (!props.loadImageOnCanvas ()) {
             console.error ("could not draw image!");
+            return;
         }
-        manager.ReDraw (props.canvasId);
+        manager.ReDraw (CanvasUtilities.canvasId);
     });
 
     return (
         <BoostedCanvas
+            className       = {drawingCursor ? "crosshair" : "pointer"}
             height          = {canvasHeight}
             width           = {canvasWidth}
-            id              = {props.canvasId}
+            id              = {CanvasUtilities.canvasId}
             onMouseDown     = {()   =>  manager.SetFreeDrawing (true, canvasWidth, canvasHeight)}
-            onMouseMove     = {(ev) =>  manager.FreeDraw (ev.nativeEvent.offsetX, ev.nativeEvent.offsetY, props.canvasId)}
+            onMouseMove     = {(ev) =>  manager.FreeDraw (ev.nativeEvent.offsetX, ev.nativeEvent.offsetY, CanvasUtilities.canvasId)}
             onMouseUp       = {()   =>  manager.SetFreeDrawing (false)}
             onMouseLeave    = {()   =>  manager.SetFreeDrawing (false)}
-            onClick         = {(ev) =>  manager.DrawBracket( ev.nativeEvent.offsetX, ev.nativeEvent.offsetY, props.canvasId, canvasWidth, canvasHeight)}
+            onClick         = {(ev) =>  manager.DrawBracket (ev.nativeEvent.offsetX, ev.nativeEvent.offsetY, CanvasUtilities.canvasId, canvasWidth, canvasHeight)}
         />);
 }
 
 const mapStateToProps = (state: IState, ownProps: any) => ({
-    canvasId: state.canvasId,
     zoom: state.zoom,
-    canvasHeight: state.canvasHeight,
-    canvasWidth: state.canvasWidth,
     loadImageOnCanvas: state.loadImageOnCanvas,
     canvasSize: state.canvasSize, 
 });

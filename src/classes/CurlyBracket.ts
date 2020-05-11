@@ -33,7 +33,7 @@ export default class CulyBracket extends Bracket {
         let oneEighthSize: number = height / 8;
         let radius: number = oneEighthSize;
 
-        if (this.State == BracketState.Opened) {
+        if (this.State === BracketState.Opened) {
             ctx.moveTo(x - oneEighthSize, y);
             ctx.arcTo(x, y, x, y - oneEighthSize, radius);
             ctx.lineTo(x, y - oneEighthSize - quarterSize);

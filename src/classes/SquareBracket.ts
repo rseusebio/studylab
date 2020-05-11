@@ -31,7 +31,7 @@ export default class SquareBracket extends Brackets {
         ctx.moveTo(x, y);
         ctx.lineTo(x, y + halfSize);
 
-        if (this.State == BracketState.Opened) {
+        if (this.State === BracketState.Opened) {
             ctx.lineTo(x + halfSize, y + halfSize);
         }
         else {
@@ -41,7 +41,7 @@ export default class SquareBracket extends Brackets {
         ctx.moveTo(x, y);
         ctx.lineTo(x, y - halfSize);
 
-        if (this.State == BracketState.Opened) {
+        if (this.State === BracketState.Opened) {
             ctx.lineTo(x + halfSize, y - halfSize);
         }
         else {

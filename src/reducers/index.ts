@@ -8,7 +8,6 @@ import {
     urlInputId,
     canvasHeight,
     canvasWidth,
-    drawImageAtCanvas,
     loadImageOnCanvas, 
     clearCanvas,
     setImageSource, 
@@ -33,7 +32,6 @@ export interface IState {
 
     canvasSize: CanvasSize,
 
-    drawImageAtCanvas: (imageUrl: string) => boolean,
     loadImageOnCanvas: () => boolean,
     clearCanvas: () => void,
     setImageSource: (imageUrl: string) => boolean,
@@ -50,7 +48,6 @@ const rootReducer = combineReducers({
     urlInputId,
     canvasHeight,
     canvasWidth,
-    drawImageAtCanvas,
     loadImageOnCanvas, 
     clearCanvas,
     setImageSource,

@@ -1,13 +1,12 @@
-import Draw, { DrawTypes }                                from     './Draw';
+import Draw, { DrawTypes }                 from     './Draw';
 import SquareBracket                       from     './SquareBracket';
 import CurlyBracket                        from     './CurlyBracket';
 import DrawCoords                          from     './DrawCoords';
-import FreeDraw, { FreeDrawState }         from     './FreeDraw';
+import FreeDraw                            from     './FreeDraw';
 import { BracketState }                    from     './Bracket';
-import { canvasHeight } from '../reducers/init';
 
 
-export default class CanvasManager {
+export default class CanvasDrawManager {
 
     private _x:                 number                 = 0;
     private _y:                 number                 = 0;
@@ -17,12 +16,14 @@ export default class CanvasManager {
     private _color:             string                 = "black";
     private _drawStack:         Array<Draw>            = new Array<Draw>();
     private _keyState:          Map<string, boolean>   = new Map<string, boolean>();
-    private _freeDraw:          FreeDraw | null        = null;       
-
-    constructor() {
-    }
+    private _freeDraw:          FreeDraw | null        = null;
+    private _isSearching:       boolean                = false;       
+    private _setCursor:         Function;
 
     //#region Getters and Setters 
+    constructor(setCursor: Function) {
+        this._setCursor = setCursor;
+    }
 
     get X(): number {
         return this._x;
@@ -75,9 +76,11 @@ export default class CanvasManager {
         this._freeDrawing = !!drawing;
         if (this._freeDrawing) {
             this._freeDraw = new FreeDraw(cw, ch);
+            this._setCursor(true);
         }
         else {
             this._drawStack.push(this._freeDraw as FreeDraw);
+            this._setCursor(false);
         }
     }
 
@@ -94,8 +97,6 @@ export default class CanvasManager {
     }
 
     public FreeDraw(x: number, y: number, canvasId: string): void {
-        // 'F' key
-        console.info(`Drawing: ${this.Drawing}`);
         if (!this.Drawing) {
             return;
         }
@@ -105,6 +106,63 @@ export default class CanvasManager {
         }
         catch{ }
 
+    }
+
+    // try to make it async 
+    public SearchDraws(x: number, y: number) {
+        
+        if(this._isSearching)
+        {
+            return;
+        }
+
+        let found: boolean = false;
+
+        this._drawStack.reverse().forEach( 
+            (draw, index) => {
+
+            if (found) {
+                return;
+            }
+
+            switch (draw.Type) {
+
+                case DrawTypes.Free:
+                    {
+                        const freeDraw = (draw as FreeDraw);
+                        const coords = new DrawCoords(x, y);
+
+                        if (freeDraw.Find(coords)) {
+                            found = true;
+                            delete this._drawStack[index];
+                        }
+
+                        return;
+                    }
+                case DrawTypes.Curly:
+                    {
+                        const curlyDraw = (draw as CurlyBracket);
+
+                        if (curlyDraw.X === x && curlyDraw.Y === y) {
+                            found = true;
+                            delete this._drawStack[index];
+                        }
+
+                        return;
+                    }
+                case DrawTypes.Square:
+                    {
+                        const squareDraw = (draw as SquareBracket);
+
+                        if (squareDraw.X === x && squareDraw.Y === y) {
+                            found = true;
+                            delete this._drawStack[index];
+                        }
+
+                        return;
+                    }
+            }
+        });
     }
 
     public DrawBracket(x: number, y: number, canvasId: string, canvasWidth: number, canvasHeight: number): void {
@@ -150,7 +208,6 @@ export default class CanvasManager {
 
     ReDraw(canvasId: string) {
         this._drawStack.forEach((draw, index) => {
-            console.info(draw, index);
             if(!draw)
             {
                 return;

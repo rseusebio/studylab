@@ -2,31 +2,19 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux'
 import { IState } from '../reducers';
 import { TextField, Button } from '@material-ui/core';
+import CanvasUtilities from '../classes/CanvasUtilities';
 
 interface IImageSetterProps {
-    urlInputId: string,
-    drawImageAtCanvas: (imageUrl: string) => boolean, 
     clearCanvas: () => void,
     setImageSource: (imageUrl: string) => boolean
 }
 
 const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterProps) => {
 
-    const btnClick = () => {
-        const textField: HTMLInputElement = document.getElementById(props.urlInputId) as HTMLInputElement;
-        if (!textField) {
-            return;
-        }
-        if( !props.drawImageAtCanvas(textField.value) )
-        {
-            console.error("could not Save image");
-        }
-    }
-
     const newBtnClick = () => {
-        const textField: HTMLInputElement = document.getElementById(props.urlInputId) as HTMLInputElement;
+        const textField: HTMLInputElement = document.getElementById(CanvasUtilities.urlInputId) as HTMLInputElement;
         if (!textField) {
-            console.error(`Could not get text field element: ${props.urlInputId}.`);
+            console.error(`Could not get text field element: ${CanvasUtilities.urlInputId}.`);
             return;
         }
         if (!props.setImageSource(textField.value))
@@ -40,7 +28,7 @@ const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterPr
     return (
         <div style={{ display: "flex", flexDirection: "column" }}>
             <TextField
-                id={props.urlInputId}
+                id={CanvasUtilities.urlInputId}
                 style={{ maxWidth: "", backgroundColor: 'white', }}
                 label={"Url"}
                 helperText={"<insert url here>"}
@@ -58,7 +46,6 @@ const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterPr
 
 const mapStateToProps = (state: IState, ownProps: any) => ({
     urlInputId: state.urlInputId,
-    drawImageAtCanvas: state.drawImageAtCanvas,
     clearCanvas: state.clearCanvas,
     setImageSource: state.setImageSource
 });

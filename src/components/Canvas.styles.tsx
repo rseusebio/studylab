@@ -36,7 +36,6 @@ const BoostedCanvas = styled.canvas`
     padding: 0mm;
     margin: 0mm;
     background-color: white;
-    cursor: crosshair;
 `;
 
 

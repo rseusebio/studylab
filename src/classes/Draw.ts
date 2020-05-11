@@ -1,16 +1,7 @@
 export class CanvasNotFound extends Error {
-
-    constructor(message: string) {
-        super(message);
-    }
-
 }
 
 export class ContextNotFound extends Error {
-    
-    constructor(message: string) {
-        super(message);
-    }
 }
 
 export enum DrawTypes {

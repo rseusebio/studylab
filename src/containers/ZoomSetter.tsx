@@ -1,5 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
-import { TextField, Button } from '@material-ui/core';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { zoomOut, zoomIn } from '../actions';
 import { StyledButton, ButtonContainer } from './ZoomSetter.styles';

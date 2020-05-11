@@ -21,6 +21,13 @@ const CanvasContainer: FunctionComponent<ICanvasContainerProps> = (props: ICanva
         overflow-x: scroll;
         padding: 0mm;
         margin: 0mm;
+
+        .pointer{
+            cursor: pointer;
+        }
+        .crosshair{
+            cursor: crosshair;
+        }
     `;
 
     return (
