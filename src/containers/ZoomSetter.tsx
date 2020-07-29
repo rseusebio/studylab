@@ -5,6 +5,7 @@ import { StyledButton, ButtonContainer } from './ZoomSetter.styles';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { IState } from '../reducers';
+import { useMutation } from '@apollo/react-hooks';
 
 interface IZoom {
     zoomIn: () => void,
@@ -14,8 +15,8 @@ interface IZoom {
 }
 
 const ZoomSetter: FunctionComponent<IZoom> = ({ zoomIn, zoomOut, drawImageAtCanvas, imageUrl }: IZoom) => {
-    console.info(`ZoomSetter: reloading!`);
-    drawImageAtCanvas(imageUrl);
+    // console.info(`ZoomSetter: reloading!`);
+    // drawImageAtCanvas(imageUrl);
     return (
         <ButtonContainer>
             <StyledButton onClick={zoomIn}>
@@ -29,17 +30,17 @@ const ZoomSetter: FunctionComponent<IZoom> = ({ zoomIn, zoomOut, drawImageAtCanv
 }
 const changeRate: number = 0.05;
 
-const mapStateToProps = (state: IState, ownProps: any) => ({
-    drawImageAtCanvas: state.drawImageAtCanvas,
-    imageUrl: state.imageUrl,
-    zoom: state.zoom,
-});
+// const mapStateToProps = (state: IState, ownProps: any) => ({
+//     // drawImageAtCanvas: state.drawImageAtCanvas,
+//     imageUrl: state.imageUrl,
+//     zoom: state.zoom,
+// });
 
-const mapDispatchToProps = (dispatch: any) => (
-    {
-        zoomIn: () => { dispatch(zoomIn(changeRate)) },
-        zoomOut: () => { dispatch(zoomOut(changeRate)) }
-    }
-);
+// const mapDispatchToProps = (dispatch: any) => (
+//     {
+//         zoomIn: () => { dispatch(zoomIn(changeRate)) },
+//         zoomOut: () => { dispatch(zoomOut(changeRate)) }
+//     }
+// );
 
-export default connect(mapStateToProps, mapDispatchToProps)(ZoomSetter);
+// export default connect(mapStateToProps, mapDispatchToProps)(ZoomSetter);

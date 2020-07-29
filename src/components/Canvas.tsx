@@ -5,6 +5,8 @@ import { IState }                                           from    '../reducers
 import CanvasDrawManager                                    from    '../classes/CanvasDrawManager';
 import { CanvasSize }                                       from    '../reducers/canvasSize';
 import CanvasUtilities                                      from    '../classes/CanvasUtilities';
+import { useQuery }                                         from    '@apollo/react-hooks';
+import { ZOOM }                                             from    '../gql/clientQueries';
 
 interface ICanvasProps {
     zoom:               number,
@@ -17,6 +19,7 @@ const Canvas: FunctionComponent<ICanvasProps> = (props: ICanvasProps) => {
     // it must be a state because it should not reload every time the component do.
     const [drawingCursor, setCursor] = useState(false);
     const [manager] = useState(new CanvasDrawManager (setCursor));
+    const { data, loading, error } = useQuery(ZOOM);
 
     
     const canvasHeight      = props.canvasSize.height * props.zoom;

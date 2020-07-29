@@ -4,16 +4,13 @@ import { IState } from '../reducers';
 import { TextField, Button } from '@material-ui/core';
 import CanvasUtilities from '../classes/CanvasUtilities';
 
-interface IImageSetterProps {
-    clearCanvas: () => void,
-    setImageSource: (imageUrl: string) => boolean
-}
 
-const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterProps) => {
+const ImageSetter: FunctionComponent = (props: any) => {
 
     const newBtnClick = () => {
         const textField: HTMLInputElement = document.getElementById(CanvasUtilities.urlInputId) as HTMLInputElement;
-        if (!textField) {
+        if (!textField) 
+        {
             console.error(`Could not get text field element: ${CanvasUtilities.urlInputId}.`);
             return;
         }
@@ -44,12 +41,4 @@ const ImageSetter: FunctionComponent<IImageSetterProps> = (props: IImageSetterPr
     );
 }
 
-const mapStateToProps = (state: IState, ownProps: any) => ({
-    urlInputId: state.urlInputId,
-    clearCanvas: state.clearCanvas,
-    setImageSource: state.setImageSource
-});
-
-
-export default connect(mapStateToProps, undefined)(ImageSetter);
 
